@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import $ from 'jquery';
 import Sidebar from '../components/Sidebar';
 import ChatMessage from '../components/ChatMessage';
 import PaymentModal from '../components/PaymentModal';
@@ -19,6 +18,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     loadConversations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
