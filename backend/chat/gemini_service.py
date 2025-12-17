@@ -19,11 +19,15 @@ class GeminiService:
             self.enabled = False
     
     def count_tokens(self, text):
-        """Count tokens in text using tiktoken"""
+        """
+        Count tokens in text.
+        Note: This uses an approximate method as Gemini's tokenization differs from GPT models.
+        For production, consider using Gemini's count_tokens API or a more accurate estimation.
+        """
         try:
-            encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
-            tokens = len(encoding.encode(text))
-            return tokens
+            # Approximate token counting (better fallback for Gemini)
+            # Gemini typically uses ~4 characters per token
+            return max(len(text) // 4, len(text.split()))
         except Exception as e:
             # Fallback: rough estimate of tokens
             return len(text.split()) * 1.3

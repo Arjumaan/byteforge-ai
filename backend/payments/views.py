@@ -26,6 +26,9 @@ def create_payment_view(request):
     conversation = get_object_or_404(Conversation, id=conversation_id, user=request.user)
     
     # Create payment (mock payment - auto success)
+    # WARNING: This is a mock implementation for demonstration purposes only.
+    # In production, integrate with a real payment gateway (Stripe, PayPal, etc.)
+    # and validate payment status before adding tokens.
     payment = Payment.objects.create(
         user=request.user,
         conversation=conversation,
