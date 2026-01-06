@@ -12,3 +12,7 @@ tiktoken
 python-jose
 openai
 anthropic
+gunicorn
+whitenoise
+dj-database-url
+psycopg2-binary
