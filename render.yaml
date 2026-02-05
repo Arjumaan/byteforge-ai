@@ -29,10 +29,7 @@ services:
     staticPublishPath: "build"
     envVars:
       - key: REACT_APP_API_URL
-        fromService:
-          type: web
-          name: byteforge-backend
-          property: url
+        value: https://your-backend-url.onrender.com # Update this after backend is deployed
     routes:
       - type: rewrite
         source: /*
