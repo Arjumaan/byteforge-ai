@@ -35,7 +35,6 @@ services:
         source: /*
         destination: /index.html
     rootDir: frontend
-    plan: free
 
 databases:
   - name: byteforge-db
