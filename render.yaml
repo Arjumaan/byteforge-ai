@@ -22,11 +22,10 @@ services:
     rootDir: backend
     plan: free
 
-  - type: web
+  - type: static
     name: byteforge-frontend
-    env: static
     buildCommand: "npm install && npm run build"
-    publishDir: "build"
+    staticPublishDir: "build"
     envVars:
       - key: REACT_APP_API_URL
         fromService:
@@ -38,7 +37,6 @@ services:
         source: /*
         destination: /index.html
     rootDir: frontend
-    plan: free
 
 databases:
   - name: byteforge-db
