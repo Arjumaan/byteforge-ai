@@ -18,7 +18,7 @@ class GeminiService:
         self.api_key = settings.GEMINI_API_KEY
         if self.api_key:
             genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel('gemini-flash-latest')
+            self.model = genai.GenerativeModel('gemini-1.5-flash-latest')
         else: 
             self.model = None
             logger.warning("Gemini API key not configured")

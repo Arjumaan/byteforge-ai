@@ -8,6 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 // Pages
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import VerifyEmail from './pages/VerifyEmail';
 import Chat from './pages/Chat';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
@@ -48,6 +49,7 @@ function App() {
               {/* Public Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/oauth/callback" element={<OAuthCallback />} />
 
               {/* Protected Routes */}

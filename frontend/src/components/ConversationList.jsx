@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiMessageSquare, FiClock, FiZap, FiArrowRight } from 'react-icons/fi';
+import { FiMessageSquare, FiClock, FiArrowRight } from 'react-icons/fi';
 
 const ConversationList = ({ conversations, loading }) => {
   const formatDate = (dateString) => {

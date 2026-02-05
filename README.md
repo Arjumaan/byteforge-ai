@@ -1,127 +1,67 @@
-# ByteForge AI
+# ⚡ ByteForge AI - Advanced Intelligent Workspace
 
-A full-stack AI chatbot web application with Django, React, Google Gemini integration, OAuth, and secure token-limited chat.
+ByteForge AI is a high-performance, full-stack AI orchestration platform. Designed for developers and power users, it provides a secure, token-managed environment for interacting with cutting-edge LLMs including **Gemini 1.5 Pro/Flash**, **Claude 3.5**, and **GPT-4o**.
 
-## 🚀 Tech Stack
+## ✨ Key Features
 
-- **Backend**: Django, Django REST Framework
-- **Frontend**: React.js, Tailwind CSS, jQuery (AJAX)
-- **Database**: MySQL
-- **AI**: Google Gemini API
-- **OAuth**: Google/GitHub/Apple/GitLab (via social-auth)
-- **Auth**: JWT (SimpleJWT)
+- **Multi-Model Orchestration**: Seamlessly switch between Google Gemini, Anthropic Claude, and OpenAI GPT models.
+- **Ultra-Compact UI**: Optimized for high-density productivity, featuring a "glassmorphism" aesthetic and optimized spatial density.
+- **Secure Token Management**: Built-in usage tracking and payment-ready architecture to manage resource consumption.
+- **Native Context Optimization**: Advanced message truncation and history management for faster responses and lower latency.
+- **Professional Analytics**: (Coming Soon) Dashboard for tracking usage metrics and interaction patterns.
 
-## 🏗️ Architecture
+## 🛠️ Tech Stack
 
-![architecture diagram](docs/architecture-diagram.png)
+- **Backend**: Python 3.11+, Django 4.x, Django REST Framework
+- **Frontend**: React 18, Tailwind CSS (Custom Design System)
+- **Database**: MySQL 8.0 / PostgreSQL (Render Ready)
+- **AI Integration**: Google Generative AI (v1/v1beta), OpenAI SDK, Anthropic SDK
+- **Authentication**: JWT (JSON Web Tokens) with Social OAuth provider support.
 
-## ⚙️ Setup
+## 🚀 Quick Start
 
-### 1. Clone
+### 1. Prerequisites
+- Python 3.11+
+- Node.js 18+
+- MySQL Server
 
-```sh
-git clone https://github.com/Arjumaan/byteforge-ai.git
-cd byteforge-ai
+### 2. Backend Installation
+```bash
+cd backend
+python -m venv env
+# Windows
+.\env\Scripts\activate 
+# Linux/macOS
+source env/bin/activate
+
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
 ```
 
-### 2. Backend Setup
-
-- Install requirements:
-
-  ```sh
-  cd backend
-  python -m venv env
-  source env/bin/activate
-  pip install -r requirements.txt
-  ```
-
-- Copy `.env.example` to `.env` and set your secrets/keys.
-- Setup MySQL and run:
-
-  ```sh
-  python manage.py makemigrations
-  python manage.py migrate
-  python manage.py runserver
-  ```
-
-### 3. Frontend Setup
-
-```sh
+### 3. Frontend Installation
+```bash
 cd frontend
 npm install
 npm start
 ```
 
-> **Make sure REACT_APP_API_URL is set to your backend API base!**
+## 🌐 Deployment
 
-- The app will be available at `http://localhost:3000`
+The application is architected for deployment on **Render** using the provided `render.yaml` blueprint.
 
-### 4. Google Gemini & OAuth Setup
-
-- [Google Gemini Studio](https://makersuite.google.com/app/apikey)
-- [Google Cloud OAuth](https://console.cloud.google.com/apis/credentials)
-- [GitHub Developer Settings](https://github.com/settings/developers)
-- [Apple Developer](https://developer.apple.com/account/)
-- [GitLab OAuth](https://gitlab.com/-/profile/applications)
-
-Set all keys in `.env`
-
-### 5. Database Schema
-
-- Setup via Django `migrate`, or direct SQL from `db_schema.sql`.
-
-## 📸 Screenshots
-
-> _Add screenshots here for login, chat, admin, payment, etc._
-
-## 🎬 Demo
-
-> _Optional: Add Storylane or Loom link (demo video)_
+1. Connect your repository to Render.
+2. The blueprint will automatically provision:
+   - Django Web Service (Gunicorn/WhiteNoise)
+   - Static Frontend (Served via WhiteNoise or Static Site)
+   - Managed Database
+3. Configure your `GEMINI_API_KEY`, `OPENAI_API_KEY`, etc., in the Render environment variables.
 
 ---
 
-## 6️⃣ **Local Development Steps (Summary)**
+## 🎨 UI & UX Philosophy
 
-1. **Clone the repo**  
-   `git clone https://github.com/Arjumaan/byteforge-ai.git`
-
-2. **Create MySQL DB**  
-   - Create DB: `CREATE DATABASE byteforge_db;`
-   - Edit `.env` (or use `.env.example`)
-
-3. **Backend**
-   - `cd backend`
-   - `python -m venv env && source env/bin/activate`
-   - `pip install -r requirements.txt`
-   - `python manage.py makemigrations`
-   - `python manage.py migrate`
-   - `python manage.py createsuperuser`
-   - `python manage.py runserver`
-
-4. **Frontend**
-   - `cd frontend`
-   - `npm install`
-   - `npm start`
-   - App at [http://localhost:3000](http://localhost:3000)
-
-5. **Set up OAuth & Gemini keys**  
-   - Put keys in your `.env`.
-
-6. **You're ready!**
+ByteForge AI utilizes a **Density-First** design approach. At 100% zoom, the interface provides maximum visibility for long-form code blocks and dense technical discussions, mimicking the workspace feeling of professional IDEs while maintaining a sleek, modern aesthetic.
 
 ---
-
-## 7️⃣ **You Want More?**
-
-If you want the **full detailed code of every individual backend/frontend file**, just say:
-> "Give me the code for [filename]"  
-or  
-> "Give me all backend (or frontend) code in order"
-
-I will post the exact code contents per file.
-
----
-
-**You can now start your local development and cross-verify every line!**
-
-If you want a single ZIP or a gist, or if there's **any file left**, just tell me!
+© 2026 SentraSec Systems. All rights reserved.

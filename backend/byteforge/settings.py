@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     # Third party apps
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'social_django',
     # Local apps
@@ -244,6 +245,14 @@ TOKEN_TOP_UP_AMOUNT = 10000
 
 # Admin Email
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'arjumaan21@gmail.com')
+
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Default for development
+DEFAULT_FROM_EMAIL = 'ByteForge AI <noreply@byteforge.ai>'
+
+# Frontend URL for links
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
+
 # Bypass MariaDB version check
 import django.db.backends.mysql.base
 django.db.backends.mysql.base.DatabaseWrapper.check_database_version_supported = lambda self: None

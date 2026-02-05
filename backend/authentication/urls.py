@@ -13,6 +13,8 @@ from .views import (
     AdminStatsView,
     OAuthCallbackView,
     SocialAuthSuccessView,
+    VerifyEmailView,
+    ResendVerificationView,
 )
 
 urlpatterns = [
@@ -25,4 +27,6 @@ urlpatterns = [
     path('admin/stats/', AdminStatsView.as_view(), name='admin_stats'),
     path('oauth/callback/', OAuthCallbackView.as_view(), name='oauth_callback'),
     path('oauth/success/', SocialAuthSuccessView.as_view(), name='social_auth_success'),
+    path('verify-email/', VerifyEmailView.as_view(), name='verify_email'),
+    path('resend-verification/', ResendVerificationView.as_view(), name='resend_verification'),
 ]

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FiSend, FiSquare, FiCpu, FiChevronDown } from 'react-icons/fi';
+import { FiSend, FiSquare, FiCpu, FiChevronDown, FiAlertTriangle } from 'react-icons/fi';
 
 const ChatInput = ({ onSend, disabled, isLoading, models, selectedModel, onModelChange }) => {
   const [message, setMessage] = useState('');
@@ -40,20 +40,18 @@ const ChatInput = ({ onSend, disabled, isLoading, models, selectedModel, onModel
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 border-t border-gray-100 dark:border-night-800 bg-white dark:bg-night-950/95 backdrop-blur-md relative z-20 transition-colors duration-200">
-      <div className="max-w-4xl mx-auto space-y-3">
+    <form onSubmit={handleSubmit} className="p-2 border-t border-gray-100 dark:border-night-800 bg-white dark:bg-night-950/95 backdrop-blur-md relative z-20 transition-colors duration-200">
+      <div className="max-w-4xl mx-auto space-y-1.5">
         {/* Model Selector Pill */}
         <div className="relative inline-block" ref={dropdownRef}>
           <button
             type="button"
             onClick={() => setShowModelDropdown(!showModelDropdown)}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-night-900 border border-gray-100 dark:border-night-800 text-xs font-semibold text-primary-600 dark:text-primary-400 hover:border-primary-400 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-night-800 transition-all shadow-sm group"
+            className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white dark:bg-night-900 border border-gray-100 dark:border-night-800 text-[10px] font-bold text-primary-600 dark:text-primary-400 hover:border-primary-400 transition-all shadow-sm"
           >
-            <div className="p-1 bg-primary-100 dark:bg-primary-500/20 rounded-full group-hover:bg-primary-200 dark:group-hover:bg-primary-500/30 transition-colors">
-              <FiCpu className="w-3 h-3 text-primary-600 dark:text-primary-400" />
-            </div>
+            <FiCpu className="w-2.5 h-2.5" />
             <span>{selectedModel?.name || 'Select Model'}</span>
-            <FiChevronDown className={`w-3.5 h-3.5 text-gray-400 dark:text-gray-500 transition-transform ${showModelDropdown ? 'rotate-180' : ''}`} />
+            <FiChevronDown className={`w-2.5 h-2.5 transition-transform ${showModelDropdown ? 'rotate-180' : ''}`} />
           </button>
 
           {showModelDropdown && (
@@ -71,42 +69,43 @@ const ChatInput = ({ onSend, disabled, isLoading, models, selectedModel, onModel
                     }`}
                 >
                   <div className={`w-2 h-2 rounded-full ring-2 ring-offset-1 ${selectedModel?.id === model.id ? 'bg-primary-500 ring-primary-200 dark:ring-primary-500/30' : 'bg-gray-300 dark:bg-gray-600 ring-transparent'}`} />
-                  {model.name}
+                  <span className="flex-1 truncate">{model.name}</span>
+                  {model.warning && <FiAlertTriangle className="w-3.5 h-3.5 text-yellow-500 flex-shrink-0" />}
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        <div className="flex items-end gap-3 bg-white dark:bg-night-900 rounded-2xl border border-gray-100 dark:border-night-800 p-4 shadow-sm focus-within:shadow-md focus-within:border-primary-400 dark:focus-within:border-primary-500 focus-within:ring-4 focus-within:ring-primary-50 dark:focus-within:ring-primary-500/10 transition-all duration-300">
+        <div className="flex items-end gap-2 bg-white dark:bg-night-900 rounded-lg border border-gray-100 dark:border-night-800 p-2 shadow-sm focus-within:ring-2 focus-within:ring-primary-500/10 transition-all duration-300">
           <textarea
             ref={textareaRef}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={`Message ${selectedModel?.name || 'ByteForge AI'}...`}
+            placeholder={`Message...`}
             disabled={disabled || isLoading}
             rows={1}
-            className="flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none focus:outline-none min-h-[24px] max-h-[200px] text-sm leading-relaxed font-medium"
+            className="flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-none focus:outline-none min-h-[18px] max-h-[120px] text-xs leading-tight font-medium"
           />
           <button
             type="button"
             onClick={handleSubmit}
             disabled={!message.trim() || disabled || isLoading}
-            className={`p-3 rounded-xl transition-all duration-200 flex items-center justify-center ${message.trim() && !disabled && !isLoading
-              ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/30 hover:shadow-primary-500/40 hover:scale-105 active:scale-95'
-              : 'bg-gray-100 dark:bg-night-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+            className={`p-1.5 rounded-md transition-all duration-200 flex items-center justify-center ${message.trim() && !disabled && !isLoading
+              ? 'bg-primary-600 text-white shadow-sm hover:bg-primary-500 active:scale-95'
+              : 'bg-gray-100 dark:bg-night-800 text-gray-400 cursor-not-allowed'
               }`}
           >
             {isLoading ? (
-              <FiSquare className="w-5 h-5 animate-pulse" />
+              <FiSquare className="w-3.5 h-3.5 animate-pulse" />
             ) : (
-              <FiSend className="w-5 h-5" />
+              <FiSend className="w-3.5 h-3.5" />
             )}
           </button>
         </div>
-        <p className="text-[11px] text-gray-400 dark:text-gray-500 text-center font-medium opacity-70">
-          ByteForge AI can make mistakes. Consider checking important information.
+        <p className="text-[9px] text-gray-400 dark:text-gray-500 text-center font-medium opacity-60">
+          ByteForge AI can make mistakes.
         </p>
       </div>
     </form>

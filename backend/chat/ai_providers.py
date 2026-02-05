@@ -33,21 +33,42 @@ class AIProvider:
                 filtered_messages.append(msg)
         return system_prompt, filtered_messages
 
-    def truncate_context(self, messages: List[Dict[str, str]], max_tokens: int, reserve_for_response: int = 1000) -> List[Dict[str, str]]:
+    def truncate_context(self, messages: List[Dict], max_tokens: int, reserve_for_response: int = 1000) -> List[Dict]:
         """Truncate message history to fit within token limit."""
         available_tokens = max_tokens - reserve_for_response
         if available_tokens <= 0: return []
         
         truncated = []
         current_tokens = 0
-        for message in reversed(messages):
-            message_tokens = self.count_tokens(message.get('content', '')) + 4
+        
+        # The last message is the current user prompt, always include it if possible
+        user_prompt = messages[-1]
+        user_tokens = user_prompt.get('tokens_used') or self.count_tokens(user_prompt.get('content', ''))
+        
+        # System instruction
+        system_instr = messages[0] if messages[0]['role'] == 'system' else None
+        system_tokens = self.count_tokens(system_instr['content']) if system_instr else 0
+        
+        available_tokens -= (user_tokens + system_tokens)
+        
+        # Add history in reverse
+        history = messages[1:-1] if system_instr else messages[:-1]
+        
+        for message in reversed(history):
+            # Use pre-calculated tokens if available in the dictionary
+            message_tokens = message.get('tokens_used') or (self.count_tokens(message.get('content', '')) + 4)
             if current_tokens + message_tokens <= available_tokens:
                 truncated.insert(0, message)
                 current_tokens += message_tokens
             else:
                 break
-        return truncated
+        
+        final_messages = []
+        if system_instr: final_messages.append(system_instr)
+        final_messages.extend(truncated)
+        final_messages.append(user_prompt)
+        
+        return final_messages
 
     def generate_title(self, first_message: str) -> str:
         """Generate a title for the conversation."""
@@ -64,7 +85,7 @@ class AIProvider:
 
 
 class GeminiProvider(AIProvider):
-    def __init__(self, model_name='gemini-flash-latest'):
+    def __init__(self, model_name='gemini-1.5-flash-latest'):
         # Support multiple keys separated by comma
         raw_keys = settings.GEMINI_API_KEY or ""
         self.api_keys = [k.strip() for k in raw_keys.split(',') if k.strip()]
@@ -85,62 +106,68 @@ class GeminiProvider(AIProvider):
 
     def count_tokens(self, text: str) -> int:
         if not text: return 0
-        try:
-             # Use tiktoken as proxy for speed, or length
-            encoding = tiktoken.get_encoding("cl100k_base")
-            return len(encoding.encode(text))
-        except:
-            return super().count_tokens(text)
+        # Character-based estimation is much faster for high-traffic apps
+        # than loading tiktoken dictionaries repeatedly
+        return len(text) // 3 + 1
 
-    def generate_response(self, messages: List[Dict[str, str]], max_tokens: int = 1000):
+    def generate_response(self, messages: List[Dict], max_tokens: int = 1000):
         if not self.api_keys:
             raise Exception("Gemini API keys not configured")
 
-        # Convert standard messages to Gemini prompt
-        prompt_parts = []
-        for msg in messages:
-            role = msg.get('role', 'user')
-            content = msg.get('content', '')
-            if role == 'user':
-                prompt_parts.append(f"User: {content}")
-            elif role == 'assistant':
-                prompt_parts.append(f"Assistant: {content}")
-            elif role == 'system':
-                prompt_parts.append(f"System: {content}")
+        # Use Chat Session for better performance and native multi-turn support
+        system_instruction, chat_messages = self.build_system_prompt(messages)
         
-        full_prompt = "\n\n".join(prompt_parts)
-        prompt_tokens = self.count_tokens(full_prompt)
+        # Convert messages to Gemini format
+        gemini_history = []
+        # messages contains [system_instr, ..., current_user_msg]
+        # current_user_msg is the last one
+        user_msg = chat_messages[-1]['content']
+        history_msgs = chat_messages[:-1]
+        
+        for msg in history_msgs:
+            role = 'user' if msg['role'] == 'user' else 'model'
+            gemini_history.append({"role": role, "parts": [msg['content']]})
+        
+        prompt_tokens = self.count_tokens(user_msg) + sum(m.get('tokens_used', 20) for m in history_msgs)
 
-        # Retry logic for key rotation
         attempts = 0
         total_keys = len(self.api_keys)
         
-        # Try at most total_keys times (one for each key)
         while attempts < total_keys:
             try:
-                response = self.model.generate_content(
-                    full_prompt,
+                # Re-initialize model with system instruction if provided
+                model = genai.GenerativeModel(
+                    model_name=self.model_name,
+                    system_instruction=system_instruction
+                )
+                
+                chat = model.start_chat(history=gemini_history)
+                response = chat.send_message(
+                    user_msg,
                     generation_config=genai.types.GenerationConfig(
                         max_output_tokens=max_tokens,
                         temperature=0.7,
                     )
                 )
-                text = response.text if response.text else ""
+                
+                # Handle safety filters blocking response
+                try:
+                    text = response.text if response.candidates else "The AI refused to provide a response due to safety restrictions."
+                except Exception:
+                    text = "Response blocked by AI safety filters."
+                    
                 completion_tokens = self.count_tokens(text)
                 return text, prompt_tokens, completion_tokens
             except Exception as e:
                 error_str = str(e).lower()
-                # Check for quota limits (429 or ResourceExhausted)
                 if "429" in error_str or "quota" in error_str or "resource_exhausted" in error_str:
-                    logger.warning(f"Gemini Key {self.current_key_index} exhausted. Rotating to next key...")
+                    logger.warning(f"Gemini Key {self.current_key_index} exhausted. Rotating...")
                     attempts += 1
-                    # Rotate key index
                     if total_keys > 1:
                         self.current_key_index = (self.current_key_index + 1) % total_keys
-                        self._configure_client()
+                        self._configure_client() # This now updates self.model_name and self.model
                         continue
                     else:
-                        # Only 1 key available, cannot rotate
                         raise e
                 else:
                     logger.error(f"Gemini Error: {e}")

@@ -53,18 +53,18 @@ const Dashboard = () => {
   };
 
   const StatCard = ({ title, value, icon: Icon, colorClass, bgClass, subValue }) => (
-    <div className="bg-white dark:bg-night-900 border border-gray-100 dark:border-night-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
-      <div className="flex items-start justify-between mb-4">
-        <div className={`p-3 rounded-xl ${bgClass}`}>
-          <Icon className={`w-6 h-6 ${colorClass}`} />
+    <div className="bg-white dark:bg-night-900 border border-gray-100 dark:border-night-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+      <div className="flex items-start justify-between mb-3">
+        <div className={`p-2.5 rounded-lg ${bgClass}`}>
+          <Icon className={`w-5 h-5 ${colorClass}`} />
         </div>
-        <span className="text-xs font-semibold text-green-500 bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded-full flex items-center gap-1 border border-green-100 dark:border-green-500/20">
-          <FiArrowUpRight className="w-3 h-3" /> 12%
+        <span className="text-[10px] font-semibold text-green-500 bg-green-50 dark:bg-green-500/10 px-1.5 py-0.5 rounded-full flex items-center gap-1 border border-green-100 dark:border-green-500/20">
+          <FiArrowUpRight className="w-2.5 h-2.5" /> 12%
         </span>
       </div>
       <div>
-        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{title}</p>
-        <h3 className="text-3xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">{value}</h3>
+        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">{title}</p>
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">{value}</h3>
       </div>
     </div>
   );
@@ -73,26 +73,26 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-50/50 dark:bg-night-950 transition-colors duration-200 font-sans">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Dashboard Overview</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Dashboard Overview</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-2">
               Welcome back! Here's what's happening today.
             </p>
           </div>
           <Link
             to="/chat"
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 dark:bg-primary-600 hover:bg-black dark:hover:bg-primary-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-primary-600 hover:bg-black dark:hover:bg-primary-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 text-sm"
           >
-            <FiPlus className="w-5 h-5" />
+            <FiPlus className="w-4 h-4" />
             Create New Chat
           </Link>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
           <StatCard
             title="Total Conversations"
             value={stats.totalConversations}
@@ -116,15 +116,15 @@ const Dashboard = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Recent Conversations */}
-          <div className="lg:col-span-2 bg-white dark:bg-night-900 border border-gray-100 dark:border-night-800 rounded-2xl shadow-sm p-6 transition-colors">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                <FiGrid className="w-5 h-5 text-gray-400 dark:text-gray-400" />
+          <div className="lg:col-span-2 bg-white dark:bg-night-900 border border-gray-100 dark:border-night-800 rounded-xl shadow-sm p-5 transition-colors">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <FiGrid className="w-4 h-4 text-gray-400 dark:text-gray-400" />
                 Recent Activity
               </h2>
-              <Link to="/chat" className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline">
+              <Link to="/chat" className="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline">
                 View All
               </Link>
             </div>
@@ -132,21 +132,21 @@ const Dashboard = () => {
           </div>
 
           {/* Quick Actions / Tips */}
-          <div className="bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl p-6 text-white shadow-lg space-y-6">
+          <div className="bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl p-5 text-white shadow-lg space-y-5">
             <div>
-              <h3 className="text-xl font-bold mb-2">Upgrade to Pro</h3>
-              <p className="text-primary-100 text-sm leading-relaxed mb-4">
+              <h3 className="text-lg font-bold mb-1.5">Upgrade to Pro</h3>
+              <p className="text-primary-100 text-xs leading-relaxed mb-3">
                 Unlock advanced models like GPT-4o and Claude 3 Opus for complex reasoning tasks.
               </p>
-              <button className="w-full py-2.5 bg-white text-primary-700 font-bold rounded-lg hover:bg-primary-50 transition-colors text-sm">
+              <button className="w-full py-2 bg-white text-primary-700 font-bold rounded-lg hover:bg-primary-50 transition-colors text-xs">
                 View Plans
               </button>
             </div>
-            <div className="pt-6 border-t border-white/20">
-              <h4 className="font-bold text-sm mb-2 flex items-center gap-2">
-                <FiZap className="w-4 h-4 text-yellow-300" /> Pro Tip
+            <div className="pt-5 border-t border-white/20">
+              <h4 className="font-bold text-xs mb-1.5 flex items-center gap-1.5">
+                <FiZap className="w-3.5 h-3.5 text-yellow-300" /> Pro Tip
               </h4>
-              <p className="text-xs text-primary-100">
+              <p className="text-[10px] text-primary-100">
                 Use <code className="bg-white/20 px-1 py-0.5 rounded text-white font-mono">Shift + Enter</code> to create a new line in the chat input without sending.
               </p>
             </div>
@@ -154,9 +154,9 @@ const Dashboard = () => {
         </div>
 
         {/* Payment History */}
-        <div className="bg-white dark:bg-night-900 border border-gray-100 dark:border-night-800 rounded-2xl shadow-sm overflow-hidden transition-colors">
-          <div className="p-6 border-b border-gray-100 dark:border-night-800">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Payment History</h2>
+        <div className="bg-white dark:bg-night-900 border border-gray-100 dark:border-night-800 rounded-xl shadow-sm overflow-hidden transition-colors">
+          <div className="p-5 border-b border-gray-100 dark:border-night-800">
+            <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Payment History</h2>
           </div>
 
           <div className="overflow-x-auto">

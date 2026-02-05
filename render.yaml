@@ -1,7 +1,7 @@
 services:
   - type: web
     name: byteforge-backend
-    runtime: python
+    env: python
     buildCommand: "./build.sh"
     startCommand: "gunicorn byteforge.wsgi:application"
     envVars:
@@ -22,9 +22,9 @@ services:
     rootDir: backend
     plan: free
 
-  - type: static
+  - type: web
     name: byteforge-frontend
-    runtime: static
+    env: static
     buildCommand: "npm install && npm run build"
     publishDir: "build"
     envVars:

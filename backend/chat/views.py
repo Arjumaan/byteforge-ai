@@ -169,7 +169,8 @@ class SendMessageView(APIView):
         )
         
         # Build context from conversation history
-        history = conversation.messages.exclude(id=user_msg.id).values('role', 'content')
+        # Inclusion of tokens_used allows AIService.truncate_context to skip re-calculating tokens
+        history = list(conversation.messages.exclude(id=user_msg.id).values('role', 'content', 'tokens_used'))
         
         system_instruction = {
             'role': 'system', 
@@ -181,12 +182,12 @@ class SendMessageView(APIView):
             )
         }
         
-        messages = [system_instruction] + list(history) + [{'role': 'user', 'content': user_message}]
+        # Prepare messages for truncation
+        full_mesages_stack = [system_instruction] + history + [{'role': 'user', 'content': user_message, 'tokens_used': user_msg_tokens}]
 
-        
-        # Truncate context if needed
+        # Truncate context if needed (uses pre-calculated tokens from history)
         available_tokens = conversation.remaining_tokens - 1000  # Reserve for response
-        messages = ai_service.truncate_context(messages, available_tokens)
+        messages = ai_service.truncate_context(full_mesages_stack, available_tokens)
         
         # Generate AI response
         try:
@@ -199,33 +200,12 @@ class SendMessageView(APIView):
         except Exception as e:
             logger.error(f"AI Generation Error: {e}")
             error_msg = str(e)
-            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
             
-            # Handle Google/GenAI Quota Errors by falling back to simulation
-            if "429" in error_msg or "quota" in error_msg.lower() or "resource_exhausted" in error_msg.lower():
-                logger.warning("Quota exceeded. Falling back to simulated response.")
-                response_text = (
-                    "**[System Notice: Provider Limit Reached]**\n\n"
-                    "The external AI provider is currently experiencing high traffic (Daily Quota Exceeded). "
-                    "However, since you have sufficient tokens, I am simulating a successful response to keep your workflow uninterrupted.\n\n"
-                    "**Simulated Answer:**\n"
-                    f"This is a placeholder response for your query: \"{user_message[:50]}...\". "
-                    "In a production environment, this would automatically failover to a backup provider (e.g., OpenAI or Anthropic). "
-                    "For now, your application logic remains functional.\n\n"
-                    "===RELATED===\n"
-                    "How to configure multi-provider fallback?\n"
-                    "What are the rate limits for Gemini Flash?\n"
-                    "Upgrade to Pro Plan for higher quotas"
-                )
-                prompt_tokens = 0
-                completion_tokens = 50
-                # Continue execution without returning error
-            else:
-                return Response({
-                     'success': False, 
-                     'error': 'AI Error',
-                     'message': error_msg
-                 }, status=status_code)
+            return Response({
+                 'success': False, 
+                 'error': 'AI Provider Error',
+                 'message': error_msg
+             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Save assistant message
         assistant_msg = Message.objects.create(

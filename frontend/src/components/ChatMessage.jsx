@@ -16,13 +16,13 @@ const ChatMessage = ({ message = {}, isTyping = false, onSuggestionClick }) => {
     code: ({ node, inline, className, children, ...props }) => {
       if (inline) {
         return (
-          <code className="chat-code-block rounded px-1.5 py-0.5 font-mono text-sm border" {...props}>
+          <code className="chat-code-block rounded px-1 py-0.5 font-mono text-[13px] border" {...props}>
             {children}
           </code>
         );
       }
       return (
-        <code className="chat-code-block block rounded-lg p-4 mb-4 overflow-x-auto font-mono text-sm border" {...props}>
+        <code className="chat-code-block block rounded-lg p-3 mb-3 overflow-x-auto font-mono text-[13px] border" {...props}>
           {children}
         </code>
       );
@@ -45,14 +45,14 @@ const ChatMessage = ({ message = {}, isTyping = false, onSuggestionClick }) => {
         <div className="italic" style={{ color: textColor }}>{children}</div>
       </div>
     ),
-    p: ({ children }) => <p className="mb-4 last:mb-0 leading-7" style={{ color: textColor }}>{children}</p>,
-    ul: ({ children }) => <ul className="list-disc pl-5 mb-4 space-y-1" style={{ color: textColor }}>{children}</ul>,
-    ol: ({ children }) => <ol className="list-decimal pl-5 mb-4 space-y-1" style={{ color: textColor }}>{children}</ol>,
-    li: ({ children }) => <li className="pl-1" style={{ listStylePosition: 'outside', color: textColor }}>{children}</li>,
-    h1: ({ children }) => <h1 className="text-2xl font-bold mb-4 mt-6" style={{ color: textColor }}>{children}</h1>,
-    h2: ({ children }) => <h2 className="text-xl font-bold mb-3 mt-5" style={{ color: textColor }}>{children}</h2>,
-    h3: ({ children }) => <h3 className="text-lg font-bold mb-3 mt-4" style={{ color: textColor }}>{children}</h3>,
-    h4: ({ children }) => <h4 className="text-base font-bold mb-2 mt-3" style={{ color: textColor }}>{children}</h4>,
+    p: ({ children }) => <p className="mb-2 last:mb-0 leading-6" style={{ color: textColor }}>{children}</p>,
+    ul: ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-0.5" style={{ color: textColor }}>{children}</ul>,
+    ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-0.5" style={{ color: textColor }}>{children}</ol>,
+    li: ({ children }) => <li className="pl-0.5" style={{ listStylePosition: 'outside', color: textColor }}>{children}</li>,
+    h1: ({ children }) => <h1 className="text-xl font-bold mb-2 mt-4" style={{ color: textColor }}>{children}</h1>,
+    h2: ({ children }) => <h2 className="text-lg font-bold mb-2 mt-4" style={{ color: textColor }}>{children}</h2>,
+    h3: ({ children }) => <h3 className="text-base font-bold mb-2 mt-3" style={{ color: textColor }}>{children}</h3>,
+    h4: ({ children }) => <h4 className="text-sm font-bold mb-1.5 mt-2" style={{ color: textColor }}>{children}</h4>,
     strong: ({ children }) => <strong className="font-bold" style={{ color: textColor }}>{children}</strong>,
     em: ({ children }) => <em className="italic" style={{ color: textColor }}>{children}</em>,
   }), [textColor]);
@@ -65,18 +65,18 @@ const ChatMessage = ({ message = {}, isTyping = false, onSuggestionClick }) => {
 
   if (isTyping) {
     return (
-      <div className="flex gap-5 px-4 py-8 max-w-4xl mx-auto">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-white dark:bg-night-900 shadow-sm border border-gray-100 dark:border-night-800 transition-colors">
-          <img src={logo} alt="AI" className="w-6 h-6 object-contain" />
+      <div className="flex gap-4 px-4 py-4 max-w-4xl mx-auto">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-white dark:bg-night-900 shadow-sm border border-gray-100 dark:border-night-800 transition-colors">
+          <img src={logo} alt="AI" className="w-5 h-5 object-contain" />
         </div>
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-sm force-inherit" style={{ color: textColor }}>ByteForge AI</span>
+            <span className="font-bold text-xs force-inherit" style={{ color: textColor }}>ByteForge AI</span>
           </div>
-          <div className="flex gap-1.5 p-3 w-fit bg-gray-50 dark:bg-night-800 rounded-2xl rounded-tl-none transition-colors">
-            <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-            <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+          <div className="flex gap-1 p-2.5 w-fit bg-gray-50 dark:bg-night-800 rounded-2xl rounded-tl-none transition-colors">
+            <div className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce"></div>
+            <div className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+            <div className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
           </div>
         </div>
       </div>
@@ -90,34 +90,34 @@ const ChatMessage = ({ message = {}, isTyping = false, onSuggestionClick }) => {
     : [];
 
   return (
-    <div className="group flex gap-5 px-4 py-8 mb-2 rounded-2xl transition-colors bg-transparent">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm border transition-colors ${isUser
+    <div className="group flex gap-3 px-3 py-3 mb-1 rounded-xl transition-colors bg-transparent">
+      <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm border transition-colors ${isUser
         ? 'bg-gradient-to-br from-primary-500 to-primary-600 border-primary-500'
         : 'bg-white dark:bg-night-900 border-gray-100 dark:border-night-800'
         }`}>
         {isUser ? (
-          <FiUser className="w-5 h-5 text-white" />
+          <FiUser className="w-3.5 h-3.5 text-white" />
         ) : (
-          <img src={logo} alt="AI" className="w-6 h-6 object-contain" />
+          <img src={logo} alt="AI" className="w-4 h-4 object-contain" />
         )}
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-3 mb-2">
-          <span className="font-bold text-sm force-inherit" style={{ color: textColor }}>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="font-bold text-[11px] force-inherit" style={{ color: textColor }}>
             {isUser ? 'You' : 'ByteForge AI'}
           </span>
-          <span className="text-xs font-medium" style={{ color: '#9ca3af' }}>
+          <span className="text-[9px] font-medium" style={{ color: '#9ca3af' }}>
             {formatTime(message?.created_at)}
           </span>
           {message.tokens_used > 0 && (
-            <span className="text-[10px] bg-gray-100 dark:bg-night-800 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full">
+            <span className="text-[9px] bg-gray-100 dark:bg-night-800 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded-full">
               {message.tokens_used} tokens
             </span>
           )}
         </div>
 
-        <div className="text-[15px] leading-relaxed w-full force-inherit" style={{ color: textColor }}>
+        <div className="text-[14px] leading-normal w-full force-inherit" style={{ color: textColor }}>
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={MarkdownComponents}>
             {mainContent}
           </ReactMarkdown>

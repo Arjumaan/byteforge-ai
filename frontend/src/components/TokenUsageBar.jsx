@@ -27,39 +27,34 @@ const TokenUsageBar = ({ used, limit, onTopUp }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-night-900 border border-gray-100 dark:border-night-800 rounded-2xl p-4 shadow-sm transition-colors duration-200">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <div className={`p-1 rounded-full ${getBgColor()}`}>
-            <FiZap className={`w-3.5 h-3.5 ${getTextColor()}`} />
-          </div>
-          <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Token Usage</span>
+    <div className="bg-white/50 dark:bg-night-900/50 backdrop-blur-sm border border-dark-100 dark:border-night-800 rounded-lg p-1.5 px-2.5 transition-colors duration-200">
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 min-w-fit">
+          <FiZap className={`w-3 h-3 ${getTextColor()}`} />
+          <span className="text-[9px] font-black text-gray-500 uppercase tracking-tighter">Usage</span>
         </div>
-        <span className={`text-xs font-bold ${getTextColor()}`}>
-          {percentage.toFixed(1)}%
-        </span>
-      </div>
 
-      <div className="h-2.5 bg-gray-100 dark:bg-night-800 rounded-full overflow-hidden mb-3 ring-1 ring-black/5 dark:ring-white/5">
-        <div
-          className={`h-full ${getColor()} transition-all duration-700 ease-out rounded-full`}
-          style={{ width: `${percentage}%` }}
-        />
-      </div>
+        <div className="flex-1 h-1.5 bg-gray-100 dark:bg-night-800 rounded-full overflow-hidden ring-1 ring-black/5 dark:ring-white/5 min-w-[60px]">
+          <div
+            className={`h-full ${getColor()} transition-all duration-700 ease-out rounded-full`}
+            style={{ width: `${percentage}%` }}
+          />
+        </div>
 
-      <div className="flex items-center justify-between text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-wider">
-        <span>{formatNumber(used)} Used</span>
-        <span>{formatNumber(limit - used)} Left</span>
+        <div className="flex items-center gap-2 min-w-fit">
+          <span className={`text-[9px] font-black ${getTextColor()}`}>
+            {percentage.toFixed(0)}%
+          </span>
+          {percentage >= 80 && (
+            <button
+              onClick={onTopUp}
+              className="px-2 py-0.5 bg-gray-900 dark:bg-primary-600 text-white text-[8px] font-black uppercase tracking-tighter rounded border border-transparent hover:bg-black transition-all"
+            >
+              TopUp
+            </button>
+          )}
+        </div>
       </div>
-
-      {percentage >= 80 && (
-        <button
-          onClick={onTopUp}
-          className="mt-3 w-full py-2 bg-gray-900 dark:bg-primary-600 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-black dark:hover:bg-primary-700 transition-all shadow-md hover:shadow-lg transform active:scale-95"
-        >
-          Add More Tokens
-        </button>
-      )}
     </div>
   );
 };

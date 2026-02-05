@@ -80,40 +80,84 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password, rememberMe = false) => {
-    const response = await api.post('/auth/login/', {
-      email,
-      password,
-      remember_me: rememberMe,
-    });
+    try {
+      const response = await api.post('/auth/login/', {
+        email,
+        password,
+        remember_me: rememberMe,
+      });
 
-    if (response.data.success) {
-      const { user: userData, tokens: newTokens } = response.data;
-      setUser(userData);
-      setTokens(newTokens);
-      localStorage.setItem('tokens', JSON.stringify(newTokens));
-      return { success: true };
+      if (response.data.success) {
+        const { user: userData, tokens: newTokens } = response.data;
+        setUser(userData);
+        setTokens(newTokens);
+        localStorage.setItem('tokens', JSON.stringify(newTokens));
+        return { success: true };
+      }
+
+      if (response.data.requires_verification) {
+        return {
+          success: false,
+          requires_verification: true,
+          email: response.data.email || email,
+          message: response.data.message || 'Verification required'
+        };
+      }
+
+      return { success: false, message: response.data.message || 'Login failed' };
+    } catch (error) {
+      console.error('Login error in AuthContext:', error);
+
+      const responseData = error.response?.data;
+
+      if (responseData && typeof responseData === 'object' && responseData.requires_verification) {
+        return {
+          success: false,
+          requires_verification: true,
+          email: responseData.email || email,
+          message: responseData.message || 'Verification required'
+        };
+      }
+
+      const errorMessage = responseData?.message || error.message || 'Login failed';
+      return { success: false, message: errorMessage };
     }
-
-    return { success: false, message: response.data.message };
   };
 
   const register = async (email, password, passwordConfirm, displayName) => {
-    const response = await api.post('/auth/register/', {
-      email,
-      password,
-      password_confirm: passwordConfirm,
-      display_name: displayName,
-    });
+    try {
+      const response = await api.post('/auth/register/', {
+        email,
+        password,
+        password_confirm: passwordConfirm,
+        display_name: displayName,
+      });
 
-    if (response.data.success) {
-      const { user: userData, tokens: newTokens } = response.data;
-      setUser(userData);
-      setTokens(newTokens);
-      localStorage.setItem('tokens', JSON.stringify(newTokens));
-      return { success: true };
+      if (response.data.success) {
+        // Registration successful - requires email verification
+        if (response.data.requires_verification) {
+          return {
+            success: true,
+            requires_verification: true,
+            email: response.data.email,
+            message: response.data.message
+          };
+        }
+
+        // OAuth user (already verified) - auto login
+        const { user: userData, tokens: newTokens } = response.data;
+        if (newTokens) {
+          setUser(userData);
+          setTokens(newTokens);
+          localStorage.setItem('tokens', JSON.stringify(newTokens));
+        }
+        return { success: true };
+      }
+
+      return { success: false, errors: response.data };
+    } catch (error) {
+      return { success: false, errors: error.response?.data || { message: 'Registration failed' } };
     }
-
-    return { success: false, errors: response.data };
   };
 
   const logout = async () => {

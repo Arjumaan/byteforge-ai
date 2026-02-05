@@ -13,6 +13,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django.conf import settings
 from django.shortcuts import redirect
 from django.db.models import Sum
+import logging
 
 from .serializers import (
     UserSerializer, 
@@ -21,8 +22,11 @@ from .serializers import (
     ChangePasswordSerializer,
     UpdateProfileSerializer
 )
+from .models import EmailVerificationToken
+from .email_service import send_verification_email, send_welcome_email
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 def get_tokens_for_user(user):
@@ -35,7 +39,7 @@ def get_tokens_for_user(user):
 
 
 class RegisterView(generics.CreateAPIView):
-    """User registration endpoint."""
+    """User registration endpoint - sends verification email."""
     
     queryset = User.objects.all()
     permission_classes = [AllowAny]
@@ -46,13 +50,21 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         
-        tokens = get_tokens_for_user(user)
+        # Generate verification token
+        token = EmailVerificationToken.generate_token(user)
+        
+        # Send verification email
+        email_sent = send_verification_email(user, token)
+        
+        # Log the code for development (useful when email isn't configured)
+        logger.info(f"[DEV] Verification code for {user.email}: {token.token}")
         
         return Response({
             'success': True,
-            'message': 'Registration successful',
-            'user': UserSerializer(user).data,
-            'tokens':  tokens
+            'message': 'Registration successful! Please check your email for verification code.',
+            'requires_verification': True,
+            'email': user.email,
+            'email_sent': email_sent
         }, status=status.HTTP_201_CREATED)
 
 
@@ -81,6 +93,20 @@ class LoginView(APIView):
                 'success': False,
                 'message': 'Account is disabled'
             }, status=status.HTTP_401_UNAUTHORIZED)
+        
+        # Check if email is verified (skip for OAuth users)
+        if user.provider == 'local' and not user.is_email_verified:
+            # Generate new verification token
+            token = EmailVerificationToken.generate_token(user)
+            send_verification_email(user, token)
+            logger.info(f"[DEV] Verification code for {user.email}: {token.token}")
+            
+            return Response({
+                'success': False,
+                'message': 'Please verify your email before logging in. A new verification code has been sent.',
+                'requires_verification': True,
+                'email': user.email
+            }, status=status.HTTP_200_OK)
         
         tokens = get_tokens_for_user(user)
         
@@ -113,6 +139,124 @@ class LogoutView(APIView):
                 'success': True,
                 'message': 'Logout successful'
             }, status=status.HTTP_200_OK)
+
+
+class VerifyEmailView(APIView):
+    """Verify email with 6-digit code."""
+    
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        email = request.data.get('email')
+        code = request.data.get('code')
+        
+        logger.info(f"Verification attempt: Email={email}, Code={code}")
+        
+        if not email or not code:
+            return Response({
+                'success': False,
+                'message': 'Email and verification code are required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': 'User not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        # Check if already verified
+        if user.is_email_verified:
+            tokens = get_tokens_for_user(user)
+            return Response({
+                'success': True,
+                'message': 'Email already verified',
+                'user': UserSerializer(user).data,
+                'tokens': tokens
+            }, status=status.HTTP_200_OK)
+        
+        # Find valid token
+        try:
+            token = EmailVerificationToken.objects.get(
+                user=user,
+                token=code,
+                is_used=False
+            )
+        except EmailVerificationToken.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': 'Invalid verification code'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if expired
+        if token.is_expired:
+            return Response({
+                'success': False,
+                'message': 'Verification code has expired. Please request a new one.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Mark token as used and verify user
+        token.is_used = True
+        token.save()
+        
+        user.is_email_verified = True
+        user.save()
+        
+        # Send welcome email
+        send_welcome_email(user)
+        
+        # Generate tokens for auto-login
+        tokens = get_tokens_for_user(user)
+        
+        return Response({
+            'success': True,
+            'message': 'Email verified successfully! Welcome to ByteForge AI.',
+            'user': UserSerializer(user).data,
+            'tokens': tokens
+        }, status=status.HTTP_200_OK)
+
+
+class ResendVerificationView(APIView):
+    """Resend verification code to email."""
+    
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        email = request.data.get('email')
+        
+        if not email:
+            return Response({
+                'success': False,
+                'message': 'Email is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            # Don't reveal if user exists
+            return Response({
+                'success': True,
+                'message': 'If an account exists with this email, a verification code will be sent.'
+            }, status=status.HTTP_200_OK)
+        
+        if user.is_email_verified:
+            return Response({
+                'success': False,
+                'message': 'Email is already verified'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Generate new token
+        token = EmailVerificationToken.generate_token(user)
+        email_sent = send_verification_email(user, token)
+        
+        logger.info(f"[DEV] Verification code for {user.email}: {token.token}")
+        
+        return Response({
+            'success': True,
+            'message': 'Verification code sent to your email.',
+            'email_sent': email_sent
+        }, status=status.HTTP_200_OK)
 
 
 class UserProfileView(APIView):
