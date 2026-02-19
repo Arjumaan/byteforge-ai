@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: byteforge-backend
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn byteforge.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+      - key: DATABASE_URL
+        fromDatabase:
+          name: byteforge-db
+          property: connectionString
+      - key: RENDER
+        value: true
+      - key: DEBUG
+        value: 'false'
+    rootDir: backend
+    plan: free
+
+  - type: web
+    name: byteforge-frontend
+    env: static
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: "build"
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://your-backend-url.onrender.com # Update this after backend is deployed
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    rootDir: frontend
+
+databases:
+  - name: byteforge-db
+    databaseName: byteforge
+    user: byteforge
+    plan: free
