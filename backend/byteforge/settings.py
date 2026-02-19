@@ -193,6 +193,11 @@ CORS_ALLOWED_ORIGINS = os.getenv(
 ).split(',')
 CORS_ALLOW_CREDENTIALS = True
 
+if os.getenv('RENDER'):
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        r"^https://.*\.onrender\.com$",
+    ]
+
 # Social Auth Configuration
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
