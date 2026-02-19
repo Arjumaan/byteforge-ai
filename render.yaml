@@ -34,7 +34,7 @@ services:
         fromService:
           type: web
           name: byteforge-backend
-          property: url
+          property: host
     routes:
       - type: rewrite
         source: /*
