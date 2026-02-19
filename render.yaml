@@ -3,7 +3,7 @@ services:
     name: byteforge-backend
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn byteforge.wsgi:application"
+    startCommand: "python manage.py migrate && gunicorn byteforge.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
