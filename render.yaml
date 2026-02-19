@@ -19,6 +19,8 @@ services:
         value: true
       - key: DEBUG
         value: 'false'
+      - key: OPENROUTER_API_KEY
+        sync: false
     rootDir: backend
     plan: free
 
@@ -29,7 +31,10 @@ services:
     staticPublishPath: "build"
     envVars:
       - key: REACT_APP_API_URL
-        value: https://your-backend-url.onrender.com # Update this after backend is deployed
+        fromService:
+          type: web
+          name: byteforge-backend
+          property: url
     routes:
       - type: rewrite
         source: /*

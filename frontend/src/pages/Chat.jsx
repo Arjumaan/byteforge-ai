@@ -133,7 +133,7 @@ const Chat = () => {
 
     try {
       const tokens = JSON.parse(localStorage.getItem('tokens'));
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+      const apiUrl = api.defaults.baseURL;
 
       const response = await fetch(`${apiUrl}/chat/stream/`, {
         method: 'POST',
